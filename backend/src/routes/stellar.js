@@ -3,6 +3,27 @@ import * as StellarService from '../services/stellar.js';
 
 const router = express.Router();
 
+/**
+ * @swagger
+ * /api/stellar/account/create:
+ *   post:
+ *     summary: Create a new Stellar account
+ *     description: Generates a new random keypair for a Stellar account.
+ *     tags: [Stellar]
+ *     responses:
+ *       200:
+ *         description: Account created successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Account'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post('/account/create', async (req, res) => {
   try {
     const account = await StellarService.createAccount();
@@ -12,6 +33,36 @@ router.post('/account/create', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/stellar/account/{publicKey}:
+ *   get:
+ *     summary: Get account balance
+ *     description: Retrieves the balance for a given Stellar public key.
+ *     tags: [Stellar]
+ *     parameters:
+ *       - in: path
+ *         name: publicKey
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The public key of the account to check.
+ *     responses:
+ *       200:
+ *         description: Balance retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 $ref: '#/components/schemas/Balance'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get('/account/:publicKey', async (req, res) => {
   try {
     const balance = await StellarService.getBalance(req.params.publicKey);
@@ -21,6 +72,35 @@ router.get('/account/:publicKey', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/stellar/payment/send:
+ *   post:
+ *     summary: Send a payment
+ *     description: Sends a payment from one Stellar account to another.
+ *     tags: [Stellar]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             $ref: '#/components/schemas/PaymentRequest'
+ *     responses:
+ *       200:
+ *         description: Payment sent successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/PaymentResult'
+ *       400:
+ *         description: Invalid request
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.post('/payment/send', async (req, res) => {
   try {
     const { sourceSecret, destination, amount, assetCode } = req.body;
@@ -31,6 +111,40 @@ router.post('/payment/send', async (req, res) => {
   }
 });
 
+/**
+ * @swagger
+ * /api/stellar/exchange-rate/{from}/{to}:
+ *   get:
+ *     summary: Get exchange rate
+ *     description: Retrieves the exchange rate between two assets on the Stellar network.
+ *     tags: [Stellar]
+ *     parameters:
+ *       - in: path
+ *         name: from
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The source asset code.
+ *       - in: path
+ *         name: to
+ *         required: true
+ *         schema:
+ *           type: string
+ *         description: The target asset code.
+ *     responses:
+ *       200:
+ *         description: Exchange rate retrieved successfully
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/ExchangeRate'
+ *       500:
+ *         description: Server error
+ *         content:
+ *           application/json:
+ *             schema:
+ *               $ref: '#/components/schemas/Error'
+ */
 router.get('/exchange-rate/:from/:to', async (req, res) => {
   try {
     const rate = await StellarService.getExchangeRate(req.params.from, req.params.to);
@@ -41,3 +155,4 @@ router.get('/exchange-rate/:from/:to', async (req, res) => {
 });
 
 export default router;
+
