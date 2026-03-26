@@ -11,6 +11,7 @@ import securityRoutes from './routes/security.js';
 import loadTestingRoutes from './routes/loadTesting.js';
 import chaosRoutes from './routes/chaos.js';
 import mobileRoutes from './routes/mobile.js';
+import webhookRoutes from './routes/webhooks.js';
 import { eventMonitor } from './eventSourcing/index.js';
 import { auditLogger } from './security/index.js';
 import { getConfig } from './config/env.js';
@@ -50,6 +51,7 @@ app.use('/api/security', securityRoutes);
 app.use('/api/load-testing', loadTestingRoutes);
 app.use('/api/chaos', chaosRoutes);
 app.use('/api/mobile', mobileRoutes);
+app.use('/api/webhooks', webhookRoutes);
 
 app.get('/health', (req, res) => {
   res.json({ status: 'ok', network: getConfig().stellar.network });
